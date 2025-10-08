@@ -1,0 +1,2241 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Indradhanush Library</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background: #f7f9f7;
+        color: #333;
+        scroll-behavior: smooth;
+      }
+      header {
+        background: #2e7d32;
+        color: white;
+        padding: 1.5rem;
+        text-align: center;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
+      header h1 {
+        margin: 0;
+      }
+
+      .top-bar {
+        background: #e8f5e9;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        position: sticky;
+        top: 90px;
+        z-index: 999;
+      }
+      .search-container {
+        text-align: center;
+      }
+      input[type="text"] {
+        width: 100%;
+        max-width: 500px;
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+      }
+
+      .age-filter-nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        padding: 0 10px;
+        border-bottom: 1px solid #cfd8dc;
+        padding-bottom: 10px;
+      }
+      .age-filter-nav button {
+        background: #a5d6a7;
+        color: #1b5e20;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 16px;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.3s, transform 0.2s;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+      .age-filter-nav button:hover:not(.active) {
+        background: #81c784;
+        transform: scale(1.05);
+      }
+      .age-filter-nav button.active {
+        background: #2e7d32;
+        color: white;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
+
+      .category-nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+      }
+      .category-nav a {
+        background: #2e7d32;
+        color: white;
+        padding: 8px 14px;
+        border-radius: 20px;
+        text-decoration: none;
+        font-size: 14px;
+        transition: background 0.3s, transform 0.2s;
+      }
+      .category-nav a:hover {
+        background: #1b5e20;
+        transform: scale(1.05);
+      }
+
+      #library {
+        padding: 20px;
+      }
+      h2 {
+        color: #2e7d32;
+        border-bottom: 2px solid #ddd;
+        padding-bottom: 5px;
+        margin-top: 30px;
+      }
+
+      details {
+        background: white;
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin: 10px 10px 10px 30px;
+        border-radius: 6px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      details[open] {
+        background: #f0fff0;
+      }
+      details summary {
+        font-weight: bold;
+        font-size: 16px;
+        color: #2e7d32;
+        cursor: pointer;
+        list-style: none;
+      }
+      details summary:hover {
+        color: #1b5e20;
+      }
+      details p {
+        margin: 5px 0;
+      }
+
+      .children-young-readers {
+        border-left: 5px solid #ffb74d;
+      }
+      .highschool-general-readers {
+        border-left: 5px solid #4fc3f7;
+      }
+      .academics {
+        border-left: 5px solid #ba68c8;
+      }
+      .general-adult-interest {
+        border-left: 5px solid #81c784;
+      }
+
+      mark {
+        background-color: yellow;
+        color: black;
+      }
+
+      #backToTop {
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        background: #2e7d32;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-size: 14px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        transition: background 0.3s, transform 0.2s;
+      }
+      #backToTop:hover {
+        background: #1b5e20;
+        transform: scale(1.1);
+      }
+
+      #noResults {
+        text-align: center;
+        color: #b71c1c;
+        font-size: 18px;
+        margin-top: 50px;
+      }
+
+      @media (max-width: 600px) {
+        input[type="text"] {
+          width: 90%;
+        }
+        .age-filter-nav button {
+          font-size: 11px;
+          padding: 5px 8px;
+        }
+        .category-nav a {
+          font-size: 12px;
+          padding: 6px 10px;
+        }
+        details {
+          margin-left: 10px;
+        }
+      }
+
+      footer {
+        background: #2e7d32;
+        color: white;
+        text-align: center;
+        padding: 1rem;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Indradhanush Library</h1>
+      <p>Discover Knowledge Across Every Spectrum</p>
+    </header>
+
+    <div class="top-bar">
+      <div class="age-filter-nav" id="ageFilterNav"></div>
+      <div class="search-container">
+        <input
+          type="text"
+          id="search"
+          placeholder="Search by title, author, category, subcategory, or age group..."
+        />
+      </div>
+      <div class="category-nav" id="categoryNav"></div>
+    </div>
+
+    <section id="library"></section>
+    <div id="noResults" style="display: none">No results found 😞</div>
+
+    <button id="backToTop">↑ Back to Top</button>
+
+    <footer>
+      <p>&copy; 2025 Indradhanush Library</p>
+    </footer>
+
+    <script>
+      const library = {
+        "Conservation & Wildlife": {
+          Book: [
+            {
+              title: "Sustainable Living",
+              author: "Neha Gupta",
+              age: "General Adult interest",
+              summary: "Ways to live a sustainable lifestyle.",
+            },
+
+            {
+              title: "The book of Indian Shells",
+              author: "Deepak Apte(BNHS)",
+              age: "Highschool/general readers",
+              summary: "This book gives info about shells",
+            },
+            {
+              title: "The book of Indian Reptiles and Ampbibians",
+              author: "J.C.Daniel(BNHS)",
+              age: "Highschool/general readers",
+              summary:
+                "A detailed field guide presenting the rich diversity of reptiles and amphibians found across India, with illustrations, habitat information, and conservation status.",
+            },
+            {
+              title: "Some Indian Birds",
+              author: "N.N.Majumdar",
+              age: "Highschool/general readers",
+              summary: "Information about birds",
+            },
+            {
+              title: "Hornbill Nature Proteets if she is proteeted",
+              author: "N.G.Hegde",
+              age: "Children and Young readers",
+              summary:
+                "It is a children’s storybook focused on conservation of nature, specifically through the idea of planting trees.",
+            },
+            {
+              title: "My Own Book of Birds",
+              author: "Yash Muthana",
+              age: "Children and Young readers",
+              summary:
+                "A beautifully illustrated children's book showcasing various birds found in North America using collage techniques, with short descriptions of their habitats and behaviors.",
+            },
+            {
+              title: "The Book of Indian Butterflies",
+              author: "Issac Kehimkar",
+              age: "Children and Young readers",
+              summary:
+                "Birds of the Indian Subcontinent is a comprehensive field guide covering more than 1,300 species of birds found across India, Pakistan, Nepal, Bhutan, Bangladesh, Sri Lanka, and the Maldives. Each species entry includes:",
+            },
+            {
+              title: "The book of Indian Birds",
+              author: "Salim Ali",
+              age: "Children and Young readers",
+              summary:
+                "This book serves as an accessible field guide to the birds of the Indian subcontinent, particularly focusing on species found in the plains, foothills, wetlands, and coastal areas. It provides concise descriptions of bird habits, habitats, and behaviors, accompanied by color illustrations.",
+            },
+            {
+              title: "Plastis and Animals",
+              author: "Sujatha Padmanabhan",
+              age: "Children and Young readers",
+              summary:
+                "While specific details about the storyline of Something to Chew On are limited, the book is part of a series that introduces young readers to various aspects of nature, science, and the environment. Given the authors' backgrounds, it's likely that the book incorporates themes related to environmental awareness, sustainability, and the importance of understanding the natural world.",
+            },
+            {
+              title: "Secrets of the Jungle",
+              author: "Tanya Majumdar",
+              age: "Children and Young readers",
+              summary:
+                "Children: A delightful introduction to the natural world, sparking curiosity and learning.",
+            },
+            {
+              title: "Critters Around Our homes",
+              author: "Sanjay Sondhi",
+              age: "Children and Young readers",
+              summary:
+                "Offers a delightful exploration of the small creatures that inhabit our immediate surroundings (geckos, moths, squirrels), encouraging curiosity and appreciation for the natural world.",
+            },
+            {
+              title: "Shero to the Rescue",
+              author: "Ashish Kothari",
+              age: "Children and Young readers",
+              summary:
+                "A children's picture book about a rescue, published by Kalpavriksh.",
+            },
+            {
+              title: "Circle of life",
+              author: "Tanya Majumdar",
+              age: "Children and Young readers",
+              summary:
+                "A children's picture book published by Kalpavriksh, an environmental organization based in Pune, India.",
+            },
+            {
+              title: "Central Bee Reserarch & training Institute (BRTI)",
+              author: "Sandeep Joshi",
+              age: "Highschool/general readers",
+              summary:
+                "The book Green Bridges by Gopal Joshi is a Marathi-language publication that delves into the eco-restoration of the Ahar River in Udaipur, Rajasthan. The narrative focuses on the implementation of the patented Green Bridges Technology, developed by Prof. Sandeep Joshi, also known as the 'Green Surgeon' and founder of the Shrishti Eco-Research Institute (SERI). The technology aims to purify polluted water bodies through innovative, sustainable methods. The book also highlights the collaborative efforts of Probir Sinha of Green Infrastructure in this environmental initiative.",
+            },
+            {
+              title: "The ghost of the mountains",
+              author: "Sujatha Padmanabhan",
+              age: "Highschool/general readers",
+              summary:
+                "Set in the Himalayan village of Ang, Ladakh, this children's book tells the story of a young boy who discovers a snow leopard, often referred to as the 'ghost of the mountains.'",
+            },
+            {
+              title: "People & Wildlife",
+              author: "Tanya Majumdar",
+              age: "Highschool/general readers",
+              summary:
+                "This book is about such people, and the deep bonds that they have with the nature world",
+            },
+            {
+              title: "Saving the dalai lama's Cranes",
+              author: "Neeraj Vagholikar",
+              age: "Highschool/general readers",
+              summary:
+                "The story is set in Arunachal Pradesh, India, particularly around areas where black-necked cranes winter (Nyamjang Chhu river etc.)",
+            },
+            {
+              title: "Words of a wildlifer",
+              author: "Sanjay Deshpande",
+              age: "Highschool/general readers",
+              summary:
+                "Sanjay-an ardent whildlifer, a good friend,smiling face.",
+            },
+            {
+              title: "Trees of Pune",
+              author: "Sharvari Barve",
+              age: "Academics",
+              summary:
+                "Comprehensive field guide that documents 482 tree species found in Pune, including palms, conifers, cycads, and bamboos.",
+            },
+            {
+              title: "Flora Vetal Terdi",
+              author: "Dr.Satish Phadke",
+              age: "Academics",
+              summary: "Various glimpse of and information of Vetal Tekdi",
+            },
+            {
+              title: "Birds of the Indian Subcontinent",
+              author: "Richard Grimmett",
+              age: "Academics",
+              summary:
+                "A comprehensive field guide covering more than 1,300 species of birds found across India, Pakistan, Nepal, Bhutan, Bangladesh, Sri Lanka, and the Maldives.",
+            },
+            {
+              title: "Green Heritage",
+              author: "Dr.S.D.Mahajan",
+              age: "General Adult interest",
+              summary: "Glimpse of trees",
+            },
+            {
+              title: "Khari Journeys Through kachchh",
+              author: "Sujatha Padmanabhan and Shruthi Ramakrishna",
+              age: "General Adult interest",
+              summary:
+                "Follows the adventures of Khari, a young Demoiselle Crane, on her first visit to the Kachchh region of Gujarat, India, encountering diverse habitats and ecosystems.",
+            },
+            {
+              title: "Sanctualy",
+              author: "Bitttu Sahagal",
+              age: "General Adult interest",
+              summary:
+                "Information about endangered birds of india,mining tigers",
+            },
+            {
+              title: "Sanctuary ASIA Common Indian Birds Uncommon Problems",
+              author: "Bitttu Sahagal",
+              age: "General Adult interest",
+              summary:
+                "Information about common Indian birds and uncommon problems.",
+            },
+          ],
+          "Research Paper": [
+            {
+              title: "Impact of Pollution",
+              author: "Dr. Arjun Verma",
+              age: "Academics",
+              summary: "Detailed analysis of air pollution impact.",
+            },
+          ],
+          Journal: [
+            {
+              title: "Eco Journal 2024",
+              author: "Editorial Board",
+              age: "Children and Young readers",
+              summary: "Monthly articles on ecology.",
+            },
+          ],
+          Report: [
+            {
+              title: "State of Environment Report",
+              author: "Ministry of Environment",
+              age: "General Adult interest",
+              summary: "Annual government report on the environment.",
+            },
+
+            {
+              title: "Rajiv Gandhi Zoological Park & Wildlife Research Centre",
+              author: "Bitttu Sahagal",
+              age: "Academics",
+              summary:
+                "Information about various animals like tiger,elephant,birds and rhino",
+            },
+            {
+              title:
+                "Conservivation Outcomes of pashan ecorestion Project-2013",
+              author: "Bitttu Sahagal",
+              age: "General Adult interest",
+              summary: "Information about the wildlife of maharashtra",
+            },
+
+            {
+              title: "Prayavaran Avahal 1995-1996",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Paryavaran Stitich Avahal 1997-1998",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Paryavaran Avhal 1998-1999",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Environmental Status Report 2000-2001",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Paryavaran Sadhyastithi 2001-2002",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Environmental Status Report 2002-2003",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Paryavaran Avahal 2002-2003",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Environmental Status Report 2003-2004",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Paryavaran Sadhyastithi 2003-2004",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Environmental Status Report 2004-2005",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Paryavaran Sadhyastithi Avhal 2004-2005",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Paryavaran Sadhyastithi Avhal 2005-2006",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Environmental Status Report 2005-2006",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Paryavaran sadhyastithi 2006",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Environmemntal status report 2006",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Paryavaran Stithi Avahal 2006-2007",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Environmental Status Report 2006-2007",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Paryavaran Avhal 2007-2008",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Paryavaran Sadhyastithi Avahal 2008-2009",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Evaluation of Environmental Status Report 2008",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "State of Environmental Report 2009",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Paryavaran Sadhyastithi Avahal 2009-2010",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Van Vyavasthapan prakalp 2010",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "pune nagari sanyukta vanvyavsta prakalp 2010",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Nadi Kuch 2011",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Annual Report 2010-2011",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Paryavaran Sadhyastithi Avahal 2010-2011",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Nadi Kuch 2011",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Paryavaran Sadhyastithi Avahal 2011-2012",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Puneri Air Part-1 2012",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Paryavaran Sadhyastithi Avahal 2012-2013",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Paryavaran Sadhyastithi Avahal 2013-2014",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "The Smarter are turning Greener 2014",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Disaster Management Plan 2014-2015",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "External Environment Analysis 2015",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Jaivvividhta Smiti Avhal 2015",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Environmental Status Report 2016-2017",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Environmental Impact Assessment 2017",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Air Purifier Technology 2018",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "CRESP 2020",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Pune River Rejuvenation Project 2021",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Environmental Actions Towards Emmission Reduction 2021",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "A Review of Heat and Health 2022",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Environmental Impact Assessment 2018",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Paryavaran Sadhyastithi 2019-2020",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Paryavaran Sadhyastithi Avahal 1999-2000",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Paryavaran Sadhyastithi Avahal 2001-2002",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Paryavarn avhal 2007-2008",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Environmental Status Report 2008-2009",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Paryavaran Sadhyastithi Avahal 2008-2009",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Enviranmental Status Report 2001-2002",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Environmental Status Report 2002-2003",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Paryavaran Sadhyastithi Avahal 2003-2004",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Pune mahanagar palika paryavaran stithi 1999-2000",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Bhima Nadi pradushan niyantran kruti arakhada jilha Pune",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Environmental Impact Assessment 2018",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Animal report 2008-2009",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+          ],
+        },
+        "Water & Its Management": {
+          Book: [
+            {
+              title: "Climate and Us",
+              author: "Meera Iyer",
+              age: "General Adult interest",
+              summary: "Understanding climate change.",
+            },
+
+            {
+              title: "The poop book",
+              author: "Arvind Gupta",
+              age: "Children and Young readers",
+              summary: "Art and craft book",
+            },
+            {
+              title: "Conserving our water Resources",
+              author: "Rob Koudstaal",
+              age: "Highschool/general readers",
+              summary: "Water Management",
+            },
+            {
+              title: "Water & Wastewater city",
+              author: "Rob Koudstaal",
+              age: "Highschool/general readers",
+              summary: "Water Management",
+            },
+            {
+              title: "Effuent management",
+              author: "A.K. Mhaskr",
+              age: "Highschool/general readers",
+              summary:
+                "Essential environmental practice to control water pollution from industrial, agricultural, and domestic sources through physical, chemical, and biological treatments.",
+            },
+            {
+              title:
+                "Jalstrot Sneh Samvardhan Samiti Collective Strength for collective Resource",
+              author: "Govind Kale",
+              age: "Highschool/general readers",
+              summary: "No summary",
+            },
+            {
+              title: "Integrated solid Waste Management",
+              author: "Dr. C.R. Kulkarni",
+              age: "Academics",
+              summary:
+                "The TAS Bio-COM process is a biological waste management system that treats organic solid waste through thermophilic aerobic composting to produce nutrient-rich compost.",
+            },
+            {
+              title: "Decentralised Wastewater Treatment and Reuse",
+              author: "Dr. C.R. Kulkarni",
+              age: "Academics",
+              summary:
+                "The TAS Bio-COM process is a biological waste management system that treats organic solid waste through thermophilic aerobic composting to produce nutrient-rich compost.",
+            },
+            {
+              title: "The Parable of the Pipeline",
+              author: "Burke Hegdes",
+              age: "General Adult interest",
+              summary:
+                "A motivational book explaining the difference between trading time for money ('working in a pipeline') and creating systems that generate passive income ('building a pipeline').",
+            },
+            {
+              title: "The little book griha roting",
+              author: "Arvind Gupta",
+              age: "General Adult interest",
+              summary: "Art and craft book",
+            },
+            {
+              title: "Abhinav jalnayak",
+              author: "Satish Khade",
+              age: "General Adult interest",
+              summary:
+                "The increasing issue of solid waste and its impact on water bodies. The article highlights how both urban and rural areas are facing challenges related to solid waste management, leading to water pollution.",
+            },
+          ],
+          "Research Paper": [
+            {
+              title: "Arctic Ice Loss",
+              author: "Dr. Kavita Rao",
+              age: "Academics",
+              summary: "Research on ice melting patterns in Arctic regions.",
+            },
+          ],
+          Report: [
+            {
+              title: "wainganga planning for water resource development",
+              author: "Bitttu Sahagal",
+              age: "Academics",
+              summary:
+                "Information about various animals like tiger,elephant,birds and rhino",
+            },
+            {
+              title: "Riveer basin Management a Negoriated Approch",
+              author: "Bitttu Sahagal",
+              age: "Academics",
+              summary:
+                "Information about various animals like tiger,elephant,birds and rhino",
+            },
+            {
+              title:
+                "Sustainable management of lentic lotic water system case study of ujjani Reservoir",
+              author: "Bitttu Sahagal",
+              age: "Academics",
+              summary:
+                "Information about various animals like tiger,elephant,birds and rhino",
+            },
+            {
+              title: "Success Story of rejuvenation of khadakwasla Dam",
+              author: "Bitttu Sahagal",
+              age: "General Adult interest",
+              summary:
+                "Information about various animals like tiger,elephant,birds and rhino",
+            },
+
+            {
+              title: "Proposal for collection,conveyance,treatment 2015",
+              author: "Details Pending",
+              age: "Academics",
+              summary: "Details Pending",
+            },
+            {
+              title: "Proposal for RGNP 2021",
+              author: "Details Pending",
+              age: "Academics",
+              summary: "Details Pending",
+            },
+          ],
+        },
+        "Urban Planning & Development": {
+          Book: [
+            {
+              title: "Smart Mobility",
+              author: "Toh Boon Kwon",
+              age: "Highschool/general readers",
+              summary:
+                "“Developing a Liveable & Sustainable Singapore” describes how Singapore has transformed itself—from a resource-poor, small island with serious urban challenges at independence in 1965—to a globally competitive, clean, green, and liveable city-state.",
+            },
+            {
+              title: "1000 Green cities",
+              author: "Anant Abhang",
+              age: "Highschool/general readers",
+              summary:
+                "The FAO’s '1000 Green Cities' initiative is a global effort to transform urban areas so they’re healthier, greener, and more climate resilient by 2030, emphasizing green infrastructure and sustainable planning.",
+            },
+            {
+              title: "A Manual For Urban Greening In MMR",
+              author: "Anant Abhang",
+              age: "Highschool/general readers",
+              summary:
+                "The FAO’s '1000 Green Cities' initiative is a global effort to transform urban areas so they’re healthier, greener, and more climate resilient by 2030, emphasizing green infrastructure and sustainable planning.",
+            },
+            {
+              title: "Smart City Solutions",
+              author: "Joanna tan",
+              age: "Highschool/general readers",
+              summary:
+                "Focuses on urban planning, sustainable development, and liveability. Brings together case studies, best practices, and thought leadership from around the world.",
+            },
+            {
+              title: "REBUILD BY DESIGN",
+              author: "Louisa May Khoo",
+              age: "Academics",
+              summary:
+                "This field examines cities as interconnected systems, integrating various components such as transportation, infrastructure, economy, and social dynamics. Researchers employ interdisciplinary approaches to understand and improve urban environments.",
+            },
+            {
+              title: "Climate Resilient Cities",
+              author: "Neeraj Prasad",
+              age: "Academics",
+              summary:
+                "This primer serves as a practical guide for local governments, particularly in East Asia, to understand and address the impacts of climate change on urban areas.",
+            },
+            {
+              title: "Sustainably Smart pune 20230",
+              author: "Anagha Paranjape-purohit",
+              age: "General Adult interest",
+              summary:
+                "The Green Footprints of Pune is a notable publication that highlights the city's efforts toward urban sustainability and environmental conservation.",
+            },
+            {
+              title: "Synchronizing A Smarter Indian",
+              author: "Lim Wei Da",
+              age: "General Adult interest",
+              summary:
+                "Showcases case studies and actions taken across sectors to prepare the city-state for stresses and shocks — whether environmental, demographic, or economic.",
+            },
+            {
+              title: "Infant toddler caregiver frieddly neighbourhood",
+              author: "Bernard van Leer",
+              age: "General Adult interest",
+              summary:
+                "The ITCN Framework is a policy initiative to create urban environments that support the health, development, and well-being of young children and their caregivers.",
+            },
+
+            {
+              title: "Pune guide",
+              author: "Dr.Shantaram gajanan mahajan",
+              age: "General Adult interest",
+              summary:
+                "This Marathi-language guidebook offers comprehensive information about Pune's notable tourist attractions, enriched with photographs and maps. It serves as a valuable resource for both residents and visitors seeking to explore the city's historical and cultural landmarks.",
+            },
+            {
+              title: "Warli Chitra sanskruti",
+              author: "Dr. Govind Gare",
+              age: "Highschool/general readers",
+              summary:
+                "Traditional paintings of the Warli tribe from Maharashtra / border regions, their styles, motifs, and characteristic features (circles, triangles, human/animal figures)",
+            },
+          ],
+          Report: [
+            {
+              title: "One Planet city challenge 2019-2020",
+              author: "CCEP",
+              age: "Highschool/general readers",
+              summary: "Info about climate change",
+            },
+            {
+              title:
+                "Not in my backyard solid waste Management in Indian cities",
+              author: "Sunita Narain",
+              age: "Academics",
+              summary:
+                "The State of India’s Environment 2020 report, published by the Centre for Science and Environment (CSE), serves as a comprehensive annual assessment of the nation's environmental and developmental status.",
+            },
+            {
+              title: "Green Foot Prints of Pune",
+              author: "Anagha Paranjape-purohit",
+              age: "General Adult interest",
+              summary:
+                "The Green Footprints of Pune is a notable publication that highlights the city's efforts toward urban sustainability and environmental conservation.",
+            },
+
+            {
+              title:
+                "Pur niyantran va apatti vyavastapan adarsha karnyavitya paddhati 2019",
+              author: "Details Pending",
+              age: "Academics",
+              summary: "Details Pending",
+            },
+            {
+              title:
+                "Pur niyantran va apatti vyavastapan adarsha karnyavitya paddhati 2014",
+              author: "Details Pending",
+              age: "Academics",
+              summary: "Details Pending",
+            },
+            {
+              title:
+                "Pur niyantran arakhada va adarsha karnyavitya paddhati 2015",
+              author: "Details Pending",
+              age: "Academics",
+              summary: "Details Pending",
+            },
+            {
+              title:
+                "Proposal for construction and improvement of drains to prevent contamination of natural water bodies and development of heritage sites along in city of pune 2008",
+              author: "Details Pending",
+              age: "Academics",
+              summary: "Details Pending",
+            },
+            {
+              title: "Sustainbly smart pune 2030 2018",
+              author: "Dr. Priyadarshini Karve",
+              age: "Academics",
+              summary:
+                "Sustainably SMART Pune 2030 is a collaborative report developed by environmental and civic organizations, focusing on sustainable urban development and citizen engagement.",
+            },
+            {
+              title: "Innovative and diverse gardens in pune 2017",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title:
+                "Promotion and outreach program for bus rapid transit in pune city 2015",
+              author: "CEE",
+              age: "General Adult interest",
+              summary:
+                "Discusses key features, purposes, and outcomes of the Bus Rapid Transit (BRT) promotion and outreach program in Pune City.",
+            },
+            {
+              title:
+                "The maharashtra (urban areas)protection and prereservation of trees act 1975 2006",
+              author: "Details Pending",
+              age: "Academics",
+              summary: "Details Pending",
+            },
+            {
+              title: "Pune sharatil kalpak va vaividdhya udyane 2016",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "74 vi ghatna durusti raupya mahostavi varsh 2018",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Samarth pune 2020",
+              author: "Samarth bharat vyaspeeth",
+              age: "General Adult interest",
+              summary:
+                "It appears to be a society / non-profit entity involved in community/volunteer work (e.g. “Samarth Bharat volunteers revive the city from COVID pandemic”).",
+            },
+            {
+              title: "Pune mahanagarpalika andajpatrak 2013-14",
+              author: "Details Pending",
+              age: "Academics",
+              summary: "Details Pending",
+            },
+            {
+              title: "Pune mahanagarpalika andajpatrak 2014-15",
+              author: "Details Pending",
+              age: "Academics",
+              summary: "Details Pending",
+            },
+            {
+              title: "Pune mahanagarpalika andajpatrak 2019-20",
+              author: "Details Pending",
+              age: "Academics",
+              summary: "Details Pending",
+            },
+            {
+              title: "Pune mahanagarpalika andajpatrak 2016-17",
+              author: "Details Pending",
+              age: "Academics",
+              summary: "Details Pending",
+            },
+            {
+              title: "Surging ahead",
+              author: "Diniar B. Patel",
+              age: "General Adult interest",
+              summary:
+                "Publications include articles on Indian economic nationalism, deindustrialisation, and the Swadeshi movement.",
+            },
+            {
+              title: "Jilha samajik va arthik samalochan 2007-2008",
+              author: "Details Pending",
+              age: "Highschool/general readers",
+              summary: "Details Pending",
+            },
+            {
+              title: "Pune Mahanagar palika 2014-1015",
+              author: "Details Pending",
+              age: "Highschool/general readers",
+              summary: "Details Pending",
+            },
+            {
+              title: "Asian cities adapt 2013",
+              author: "Details Pending",
+              age: "Highschool/general readers",
+              summary: "Details Pending",
+            },
+            {
+              title: "Katraj Lake, Pune 2011",
+              author: "Details Pending",
+              age: "Highschool/general readers",
+              summary: "Details Pending",
+            },
+            {
+              title: "Lake water Quality Assesment 2017-2018",
+              author: "Details Pending",
+              age: "Highschool/general readers",
+              summary: "Details Pending",
+            },
+            {
+              title: "Pune mahanagar palika 2008-2009",
+              author: "Details Pending",
+              age: "Highschool/general readers",
+              summary: "Details Pending",
+            },
+            {
+              title: "Creation of Green along Traffic corridors 1",
+              author: "Details Pending",
+              age: "Highschool/general readers",
+              summary: "Details Pending",
+            },
+            {
+              title: "Monitoring ambient air quality in indian city airsheds 1",
+              author: "Details Pending",
+              age: "Highschool/general readers",
+              summary: "Details Pending",
+            },
+            {
+              title: "Pune metro prakalp 1",
+              author: "Details Pending",
+              age: "Highschool/general readers",
+              summary: "Details Pending",
+            },
+            {
+              title: "Pune mahanagar palika 1998-1999",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+          ],
+        },
+        "History and Social Sciences": {
+          Book: [
+            {
+              title:
+                "Modern Education Society's Nowrosjee Wadia College , pune GEO Heritage",
+              author: "Madhavi Ghaarpure",
+              age: "Highschool/general readers",
+              summary: "Info About aarya Chanakya",
+            },
+            {
+              title: "No Full Stops in India",
+              author: "Mark Tully",
+              age: "Highschool/general readers",
+              summary:
+                "Explores the continuous change and evolution in Indian life through various essays that highlight the contradictions and challenges inherent in modern India.",
+            },
+            {
+              title: "The maharashtra Regional & town planning Act-1996",
+              author: "Ra. A. Chowdhary",
+              age: "Academics",
+              summary:
+                "The Maharashtra Municipal Corporations Act provides the legal framework for the administration, governance, and functioning of municipal corporations in Maharashtra.",
+            },
+            {
+              title: "History of Ancient Indian",
+              author: "Ra. A. Chowdhary",
+              age: "Academics",
+              summary:
+                "The Maharashtra Municipal Corporations Act provides the legal framework for the administration, governance, and functioning of municipal corporations in Maharashtra.",
+            },
+            {
+              title: "Bombay Act no lix of 1949",
+              author: "Ra. A. Chowdhary",
+              age: "Academics",
+              summary:
+                "The Maharashtra Municipal Corporations Act provides the legal framework for the administration, governance, and functioning of municipal corporations in Maharashtra.",
+            },
+            {
+              title: "The Idea of India",
+              author: "Sunil Khilnani",
+              age: "General Adult interest",
+              summary:
+                "A seminal work exploring the formation, evolution, and identity of modern India, examining how it became a democratic nation-state despite its vast diversity.",
+            },
+            {
+              title: "Divining the Deccan",
+              author: "Bill Aitken",
+              age: "General Adult interest",
+              summary:
+                "Diving the Aitken: A Motorbike Adventure is a travel and self-discovery book written by Rashmi Bansal.",
+            },
+          ],
+          Report: [
+            {
+              title: "Micro plan of non-attainment city lucknow",
+              author: "TV Vu",
+              age: "Highschool/general readers",
+              summary:
+                "This strategy outlines actions to reduce emissions from various sectors, including industry.",
+            },
+            {
+              title: "Busisnes & INVESMENT ( Opportunities Repot 2008-2009",
+              author: "TV Vu",
+              age: "Highschool/general readers",
+              summary:
+                "This strategy outlines actions to reduce emissions from various sectors, including industry.",
+            },
+            {
+              title:
+                "Monitoring of Noise pollution during ganesh festivel-2006",
+              author: "TV Vu",
+              age: "Highschool/general readers",
+              summary:
+                "This strategy outlines actions to reduce emissions from various sectors, including industry.",
+            },
+            {
+              title: "National Water policy-2012",
+              author: "TV Vu",
+              age: "Academics",
+              summary:
+                "This strategy outlines actions to reduce emissions from various sectors, including industry.",
+            },
+            {
+              title: "Pune Sustainable Transport Journey",
+              author: "TV Vu",
+              age: "General Adult interest",
+              summary:
+                "This strategy outlines actions to reduce emissions from various sectors, including industry.",
+            },
+
+            {
+              title: "Noise Pollution During Ganesh Festival 2009",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Noise Pollution During Diwali Festival 2011",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Noise Pollution During Ganesh Festival 2011",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Noise Pollution During Ganesh Festival 2012",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Municipal Coorperations and councils 2016-2017",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+          ],
+        },
+        "Literature and Fiction": {
+          Book: [
+            {
+              title: "Abol Tabol",
+              author: "Sukumar Ray",
+              age: "Children and Young readers",
+              summary:
+                "A celebrated collection of Bengali nonsense poetry, characterized by its whimsical, playful, and satirical nature.",
+            },
+            {
+              title: "Cinderella & Other stories",
+              author: "Unknown",
+              age: "Children and Young readers",
+              summary:
+                "Cinderella and Other Stories usually refers to collections of well-known fairy tales compiled for children.",
+            },
+            {
+              title: "Fairy Tales",
+              author: "Hans Christian Andersen",
+              age: "Children and Young readers",
+              summary: "Classic collection of fairy tales.",
+            },
+            {
+              title: "Grimms Fairy Tales",
+              author: "Jacob Grimm and Wilhelm Grimm (the Brothers Grimm)",
+              age: "Children and Young readers",
+              summary:
+                "A collection of over 200 folk stories passed down through generations in Germany, involving classic themes.",
+            },
+            {
+              title: "Grimmis Fairy tales",
+              author: "Brother Grimms",
+              age: "Children and Young readers",
+              summary: "Classic collection of fairy tales.",
+            },
+            {
+              title: "He Conquered the Jungle",
+              author: "Kesava Reddy",
+              age: "Children and Young readers",
+              summary:
+                "The story of an unnamed elderly swineherd who confronts predators in the jungle over a single night to find his missing pregnant sow, symbolizing resilience.",
+            },
+            {
+              title: "Indian Tales",
+              author: "Romila Thapar",
+              age: "Children and Young readers",
+              summary:
+                "The stories are about heroes and heroines, tales of gods and demons, animals, people who face misfortune and triumph.",
+            },
+            {
+              title: "Pinocchio",
+              author: "Carlo Collodi",
+              age: "Children and Young readers",
+              summary:
+                "Pinocchio is a wooden puppet carved by Geppetto who comes to life but is naughty and disobedient, learning lessons about being a real boy.",
+            },
+            {
+              title: "The Children of the new forest",
+              author: "Frederick Marryat",
+              age: "Children and Young readers",
+              summary:
+                "The story is set during the English Civil War between the Royalists (Cavaliers) and the Parliamentarians (Roundheads).",
+            },
+            {
+              title: "The Funniest Tales of Mullah Nasruddin",
+              author: "Clifford Sawhney",
+              age: "Children and Young readers",
+              summary:
+                "A collection of short, humorous stories featuring Mullah Nasruddin, the legendary wise fool, packed with wit, irony, and wisdom.",
+            },
+            {
+              title: "The Jungle Book",
+              author: "Rudyard Kipling",
+              age: "Children and Young readers",
+              summary:
+                "The story of Mowgli, a human child raised by a wolf pack who learns the Law of the Jungle from Baloo the Bear and Bagheera the Panther.",
+            },
+            {
+              title: "The merry adventures of robin hood",
+              author: "Howard Pyle",
+              age: "Children and Young readers",
+              summary:
+                "The book tells the adventures of Robin Hood, an outlaw who lives in Sherwood Forest with his band of loyal followers known as the Merry Men.",
+            },
+            {
+              title: "The Prince & Pauper",
+              author: "Mark Twain",
+              age: "Children and Young readers",
+              summary:
+                "The story is about two boys who look exactly alike but come from very different worlds.",
+            },
+            {
+              title: "The Railway Children",
+              author: "Edith Nesbit",
+              age: "Children and Young readers",
+              summary:
+                "The story begins with the three children—Bobbie, Peter, and Phyllis—living a happy, middle-class life in London.",
+            },
+            {
+              title: "The usborne book of Pop-ups",
+              author: "Rachel Wells",
+              age: "Children and Young readers",
+              summary: "Craft book",
+            },
+            {
+              title: "Alice's Adventures in wonderland",
+              author: "Lewis Carrol",
+              age: "Highschool/general readers",
+              summary:
+                "The story begins with Alice, a curious young girl, who follows a White Rabbit down a rabbit hole and falls into a strange and whimsical world called Wonderland.",
+            },
+            {
+              title: "Amie and the chawl of colour",
+              author: "Chatura Rao",
+              age: "Highschool/general readers",
+              summary:
+                "Amie and the Chawl of Colour is a children’s fantasy story with a social allegory.",
+            },
+            {
+              title: "Folrtales From India",
+              author: "A.K.Ramanujan",
+              age: "Highschool/general readers",
+              summary:
+                "A curated collection of 110 traditional folk tales from all over India, translated into English, reflecting the country’s vast diversity.",
+            },
+            {
+              title: "High school musicl",
+              author: "N.B. Grace",
+              age: "Highschool/general readers",
+              summary:
+                "The book follows the exact plot of the first film, retelling the story of Troy Bolton and Gabriella Montez, two high school students who audition for the school musical.",
+            },
+            {
+              title: "Kalki Selected Stories",
+              author: "Ramaswamy Krishnamurthy",
+              age: "Highschool/general readers",
+              summary:
+                "An anthology of stories by Kalki, a key figure in Tamil journalism, celebrated for their vivid characters, engaging narratives, and insightful commentary.",
+            },
+            {
+              title: "Little woman",
+              author: "Louisa May Alcott",
+              age: "Highschool/general readers",
+              summary:
+                "The book shows how each sister grows up ('little women') and deals with life’s struggles.",
+            },
+            {
+              title: "Nancy Drew",
+              author: "Carolyn Keene",
+              age: "Highschool/general readers",
+              summary:
+                "Nancy Drew is a teenage amateur detective who solves mysteries in her hometown of River Heights and beyond.",
+            },
+            {
+              title: "The Fig Tree",
+              author: "Aubrey Menen",
+              age: "Highschool/general readers",
+              summary:
+                "The story centers around a Hindu priest in a small Indian village who is responsible for taking care of a sacred fig tree.",
+            },
+            {
+              title: "The world of Indian Stories",
+              author: "Cathy Spangoli",
+              age: "Highschool/general readers",
+              summary:
+                "India has one of the richest storytelling traditions in the world. From ancient times, stories have been passed down orally and in writing, shaping the country’s culture, values, and imagination.",
+            },
+            {
+              title: "A Spoke in the wheel",
+              author: "Amita Kanekar",
+              age: "General Adult interest",
+              summary:
+                "A historical novel intertwining the timelines of the Buddha’s lifetime and Emperor Ashoka’s reign, told from the perspective of a chronicler monk.",
+            },
+            {
+              title: "Ferry Crossing",
+              author: "Manohar Shetty",
+              age: "General Adult interest",
+              summary:
+                "'Ferry Crossing: Short Stories from Goa' is an anthology that brings together 27 short stories from Goa, capturing the essence of the region beyond its popular tourist image.",
+            },
+            {
+              title: "Srikanta",
+              author: "Saratchandra Chatterjee",
+              age: "General Adult interest",
+              summary:
+                "A classic Bengali novel, often considered semi-autobiographical, exploring themes of love, identity, spiritual searching, and social reform.",
+            },
+            {
+              title: "Tagore",
+              author: "Rabindranath Tagore",
+              age: "General Adult interest",
+              summary:
+                "Gitanjali is a collection of poems and devotional songs that explore themes of spirituality, love, devotion, and the relationship between humans and the divine.",
+            },
+            {
+              title: "The Evening Gone",
+              author: "Suguna Iyyer",
+              age: "General Adult interest",
+              summary:
+                "In 1921, N. S. Ramachandran, a young scientist en route to England, becomes intrigued by a scientific riddle: why does the sea appear blue even without sunlight or a blue sky to reflect?",
+            },
+          ],
+          Journal: [
+            {
+              title: "SAEVUS Inside Red Fox Territory",
+              author: "Dhirtiman Mukharji",
+              age: "General Adult interest",
+              summary: "There is information about red fox",
+            },
+            {
+              title: "SAEVUS Trunk Calling",
+              author: "Dhirtiman Mukharji",
+              age: "General Adult interest",
+              summary: "Information about elephants",
+            },
+            {
+              title: "Sanctuaty Kaziranga",
+              author: "Dhirtiman Mukharji",
+              age: "General Adult interest",
+              summary: "Information about animals and birds",
+            },
+            {
+              title: "SAEVUS",
+              author: "Dhirtiman Mukharji",
+              age: "General Adult interest",
+              summary: "Information about animals and birds",
+            },
+            {
+              title: "Saevus ART Wolfe Unplugged",
+              author: "Dhirtiman Mukharji",
+              age: "General Adult interest",
+              summary: "Information about pangolakha whild life century",
+            },
+          ],
+        },
+        "Autobiography, Biographies and Self-Help": {
+          Book: [
+            {
+              title: "Akbar",
+              author: "Anant pai",
+              age: "Children and Young readers",
+              summary: "Story about king akbar",
+            },
+            {
+              title: "Ashoka",
+              author: "India book house",
+              age: "Children and Young readers",
+              summary: "Illustrative images story about king ashoka",
+            },
+            {
+              title: "Birbal the wise",
+              author: "India book house",
+              age: "Children and Young readers",
+              summary: "Comic like story of birbal",
+            },
+            {
+              title: "Channd Bibi",
+              author: "India book house",
+              age: "Children and Young readers",
+              summary: "The story of Chand Bibi",
+            },
+            {
+              title: "Elephanta",
+              author: "Anant pai",
+              age: "Children and Young readers",
+              summary:
+                "The amar chitra katha brings u legend depicted in some of the sculptures found on the island of elephanta across bombay harbour",
+            },
+            {
+              title: "Garuda",
+              author: "India book house",
+              age: "Children and Young readers",
+              summary: "Comic like story book of Garuda a mythical bird",
+            },
+            {
+              title: "Great Indian Emperors",
+              author: "India book house",
+              age: "Children and Young readers",
+              summary: "Illustration story book about various Indian Emperors",
+            },
+            {
+              title: "Jesus christ",
+              author: "Anant pai",
+              age: "Children and Young readers",
+              summary: "Story about king akbar",
+            },
+            {
+              title: "Lava-kusha",
+              author: "Art work by Dalip Kadam",
+              age: "Children and Young readers",
+              summary: "Illustration book about Lava Kusha stories",
+            },
+            {
+              title: "My Magical School",
+              author: "Arvind Gupta",
+              age: "Children and Young readers",
+              summary: "About school life",
+            },
+            {
+              title: "Savitri",
+              author: "India book house",
+              age: "Children and Young readers",
+              summary:
+                "Illustration story book about Savitri and Satyavan In the Mahabharat",
+            },
+            {
+              title: "Bababsaheb Ambedkar",
+              author: "India book house",
+              age: "Highschool/general readers",
+              summary: "A book based on information of Dr. Babasaheb Ambedkar",
+            },
+            {
+              title: "How Taught my Grandmother To Read",
+              author: "Sudha Murty",
+              age: "Highschool/general readers",
+              summary:
+                "The story is about a young girl who teaches her elderly grandmother to read, who is determined to learn after realizing the pain of being dependent on others.",
+            },
+            {
+              title: "I have a Dream",
+              author: "Rashmi Bansal",
+              age: "Highschool/general readers",
+              summary:
+                "A collection of true stories of 20 social entrepreneurs in India who combine business skills with a desire to make a difference in society.",
+            },
+            {
+              title: "Kabir",
+              author: "India book house",
+              age: "Highschool/general readers",
+              summary: "Illustration book about kabir",
+            },
+            {
+              title: "My Days Autobiography",
+              author: "R.K Narayan",
+              age: "Highschool/general readers",
+              summary:
+                "The autobiography of R. K. Narayan, reflecting on his childhood, education, early career, and personal experiences that shaped his literary journey.",
+            },
+            {
+              title: "Shubhas Chandra Bose",
+              author: "India book house",
+              age: "Highschool/general readers",
+              summary: "Illustration story book about various Indian Emperors",
+            },
+            {
+              title: "Talk the talk",
+              author: "Arvind Gupta",
+              age: "Highschool/general readers",
+              summary: "Art and craft book",
+            },
+            {
+              title: "1000 Time Saving Ideas",
+              author: "Robert T. Kiyosaki",
+              age: "General Adult interest",
+              summary:
+                "In The Business of the 21st Century, Robert T. Kiyosaki explains how network marketing (also known as multi-level marketing or MLM) can be a smart business opportunity for the modern world.",
+            },
+            {
+              title: "Letters to Tomorrow 2007",
+              author: "Suresh Patil",
+              age: "General Adult interest",
+              summary:
+                "In this book, Suresh Patil presents an analysis of how Chhatrapati Shivaji Maharaj's leadership and administrative decisions were instrumental in establishing a secular state.",
+            },
+            {
+              title: "The Best of Tehelka",
+              author: "The best of the tehelka",
+              age: "General Adult interest",
+              summary:
+                "A compilation of some of the most powerful and investigative stories published in Tehelka, India’s bold and fearless news magazine.",
+            },
+            {
+              title: "The story of my Experiments With truth",
+              author: "Mohandas Karamchand Gandhi (Mahatma Gandhi)",
+              age: "General Adult interest",
+              summary:
+                "This is the autobiography of Mahatma Gandhi, in which he narrates his life from childhood to his early political career.",
+            },
+          ],
+        },
+        "Science and Technology": {
+          Book: [
+            {
+              title: "Sampada E-Revolution in auto Industry",
+              author: "P.N.Khanna",
+              age: "Highschool/general readers",
+              summary:
+                "This handbook is a comprehensive reference for civil engineers in India, covering practical aspects of construction, design, and fieldwork.",
+            },
+            {
+              title: "The story of Chemistry",
+              author: "P.N.Khanna",
+              age: "Highschool/general readers",
+              summary:
+                "This handbook is a comprehensive reference for civil engineers in India, covering practical aspects of construction, design, and fieldwork.",
+            },
+            {
+              title: "Bioland Environmental Technologies Group Corp. ltd.",
+              author: "Dr.R.A.Mashelkar",
+              age: "Academics",
+              summary:
+                "This work focuses on strategies and measures to mitigate the effects of global warming and climate change.",
+            },
+            {
+              title: "CSIR-NATIONAL CHEMICAL LABORATORY",
+              author: "Dr.R.A.Mashelkar",
+              age: "Academics",
+              summary:
+                "This work focuses on strategies and measures to mitigate the effects of global warming and climate change.",
+            },
+            {
+              title: "Khagol The IUCAA Bulletin",
+              author: "Dr.R.A.Mashelkar",
+              age: "Academics",
+              summary:
+                "This work focuses on strategies and measures to mitigate the effects of global warming and climate change.",
+            },
+            {
+              title: "Our Group of Companies",
+              author: "P.N.Khanna",
+              age: "General Adult interest",
+              summary:
+                "This handbook is a comprehensive reference for civil engineers in India, covering practical aspects of construction, design, and fieldwork.",
+            },
+            {
+              title: "National Mass Transit Training and Research Institute",
+              author: "P.N.Khanna",
+              age: "General Adult interest",
+              summary:
+                "This handbook is a comprehensive reference for civil engineers in India, covering practical aspects of construction, design, and fieldwork.",
+            },
+          ],
+          Report: [
+            {
+              title: "company profile 2010",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "Vahatuk sadhyastithi Avahal 2012-2013",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "CSIR-National Chemical Laboratory 2013",
+              author: "Details Pending",
+              age: "Academics",
+              summary: "Details Pending",
+            },
+            {
+              title: "essel infraproject limited company profile 2013",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "american scientific journal 2019",
+              author: "Details Pending",
+              age: "Academics",
+              summary: "Details Pending",
+            },
+            {
+              title: "technical rewiew report-1 2021",
+              author: "Details Pending",
+              age: "Academics",
+              summary: "Details Pending",
+            },
+            {
+              title: "technical rewiew report-2 2021",
+              author: "Details Pending",
+              age: "Academics",
+              summary: "Details Pending",
+            },
+            {
+              title: "project information requirment report 2021",
+              author: "Details Pending",
+              age: "Academics",
+              summary: "Details Pending",
+            },
+            {
+              title: "Shudh Hava Sankalp Maharashtra 2022",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+          ],
+        },
+        "Training and Education": {
+          Book: [
+            {
+              title: "Hands -on Ideas & Activities",
+              author: "Arvind Gupta",
+              age: "Children and Young readers",
+              summary: "Art and craft book",
+            },
+            {
+              title: "Let's look Around and Learn",
+              author: "Daljit Gupta",
+              age: "Children and Young readers",
+              summary: "Environmental studies",
+            },
+            {
+              title: "ultimate family Visual Dictionary",
+              author: "Unknown",
+              age: "Children and Young readers",
+              summary: "Childrens character building book",
+            },
+            {
+              title: "AHA! Activities",
+              author: "Arvind Gupta",
+              age: "Highschool/general readers",
+              summary: "Art and craft book",
+            },
+            {
+              title: "Cross- Stitch",
+              author: "Arora Book Company",
+              age: "Highschool/general readers",
+              summary: "Picture book about how to draw or design on the cloth",
+            },
+            {
+              title: "Learn Pencil Shading",
+              author: "Subodh Narvekar",
+              age: "Highschool/general readers",
+              summary: "Art and craft book",
+            },
+            {
+              title: "Simole Cross-stitch",
+              author: "Arun Book company",
+              age: "Highschool/general readers",
+              summary: "Picture book",
+            },
+            {
+              title: "Branding Promotional Materials & Media Guidance Notes",
+              author: "Unknown",
+              age: "Academics",
+              summary: "Childrens character building book",
+            },
+            {
+              title: "Lab products catalogue (2014-15)",
+              author: "Unknown",
+              age: "Academics",
+              summary: "Childrens character building book",
+            },
+            {
+              title: "Copyacat markeing -101",
+              author: "Unknown",
+              age: "General Adult interest",
+              summary: "Childrens character building book",
+            },
+          ],
+          Paper: [
+            {
+              title: "Natinal PPP Capacity Building Programme- Basic course",
+              author: "Government of India.pppcell",
+              age: "Academics",
+              summary:
+                "The Basic Course (Module 1) provides an introductory understanding of Public-Private Partnerships (PPPs) in India.",
+            },
+            {
+              title: "Natinal PPP Capacity Building Programme- Advanced course",
+              author: "Government of India.pppcell",
+              age: "Academics",
+              summary:
+                "The PPP Advanced Course is a comprehensive guide designed to provide in-depth knowledge of Public-Private Partnerships (PPPs) in India.",
+            },
+            {
+              title: "Natinal PPP Capacity Building Programme- Case Studies",
+              author: "Government of India.pppcell",
+              age: "Academics",
+              summary:
+                "This book compiles case studies on Public-Private Partnerships (PPPs) in India, highlighting real-world examples of PPP projects.",
+            },
+            {
+              title:
+                "Natinal PPP Capacity Building Programme- Awareness Course",
+              author: "Government of India.PPP cell",
+              age: "Academics",
+              summary:
+                "The Public-Private Partnership (PPP) Cell in India has developed an Awareness Course aimed at enhancing the understanding and implementation of PPPs across various sectors.",
+            },
+          ],
+          Other: [
+            {
+              title:
+                "EARTH HOUR CITY challenge indaia 2016 Finalists (Competition Finalist Document)",
+              author: "Unknown",
+              age: "General Adult interest",
+              summary: "Childrens character building book",
+            },
+            {
+              title:
+                "ACC0 Asia- Pacificesd Photo message (Photo message/collection)",
+              author: "Unknown",
+              age: "General Adult interest",
+              summary: "Childrens character building book",
+            },
+
+            {
+              title: "training programme 2010",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "draft communication strategy 2015",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "branding,promotional materials and media guiedance 2015",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+            {
+              title: "gender equality and inclusion 2021",
+              author: "Details Pending",
+              age: "General Adult interest",
+              summary: "Details Pending",
+            },
+          ],
+        },
+        "Arts and Culture": {
+          Book: [
+            {
+              title: "Pune Biennale",
+              author: "Prof.Dr.Kiran Shinde",
+              age: "Highschool/general readers",
+              summary:
+                "Focuses on the cultural and artistic landscape of Pune through the lens of the biennale, exploring its evolution, significance, and contribution to the local and national art scene.",
+            },
+            {
+              title: "Ghashiram Kotwal",
+              author: "Vijay Tendulkar",
+              age: "General Adult interest",
+              summary:
+                "Ghashiram Kotwal is a landmark Marathi play and one of Vijay Tendulkar’s most celebrated works.",
+            },
+
+            {
+              title: "Marathi Shabdratnakar",
+              author: "VA.GO.Apte",
+              age: "Academics",
+              summary:
+                "The Marathi Shabdratnakar is a comprehensive Marathi-to-Marathi dictionary compiled by V. G. Apte, one of the early pioneers of linguistic scholarship in Marathi. It was published in the early 20th century and is considered a significant reference work for students, scholars, writers, and anyone interested in deepening their knowledge of Marathi vocabulary and linguistic structure.",
+            },
+            {
+              title: "The Little Modern Dictionary",
+              author: "K. B. Virkar",
+              age: "Highschool/general readers",
+              summary:
+                "Useful for students learning English who also speak Marathi — helps understand English words in their native language.",
+            },
+            {
+              title: "Altimate Family Visual",
+              author: "Dorling Kindersley",
+              age: "Children and Young readers",
+              summary:
+                "It is a visual dictionary / reference book: it combines pictures, diagrams, and explanatory text to help readers understand concepts, objects, and phenomena.",
+            },
+          ],
+        },
+        "Health and Food": {
+          Book: [
+            {
+              title: "Foods Harm Foods Heal",
+              author: "Buchman",
+              age: "General Adult interest",
+              summary:
+                "Ancient Healing Secrets explores a wide array of time-tested cures from civilizations such as Egypt, China, India, South America, Russia, Scandinavia, and Africa.",
+            },
+          ],
+        },
+        Miscellaneous: {
+          Book: [
+            {
+              title: "My Magical School",
+              author: "Arvind Gupta",
+              age: "Children and Young readers",
+              summary: "About school life",
+            },
+            {
+              title: "Sweden",
+              author: "Unknown",
+              age: "Highschool/general readers",
+              summary: "To be filled by the user",
+            },
+            {
+              title: "Urban Systems Studies",
+              author: "Louisa May Khoo",
+              age: "Academics",
+              summary:
+                "This field examines cities as interconnected systems, integrating various components such as transportation, infrastructure, economy, and social dynamics. Researchers employ interdisciplinary approaches to understand and improve urban environments.",
+            },
+            {
+              title: "Giripremi's Pune Everest 2012",
+              author: "Unknown",
+              age: "General Adult interest",
+              summary: "To be filled by the user",
+            },
+            {
+              title: "Neela Padmanabhan Generations",
+              author: "Ka na Subramanyam",
+              age: "General Adult interest",
+              summary:
+                "The Tamil novel Thalaimuraigal has been translated into English as Generations. This translation was carried out by the renowned Tamil writer and critic Ka. Naa. Subramaniam.",
+            },
+          ],
+        },
+      };
+
+      const typeIcons = {
+        Book: "📖",
+        Report: "📄",
+        Journal: "📰",
+        "Research Paper": "🧪",
+        Paper: "📝",
+        Other: "💡",
+      };
+
+      const ageClasses = {
+        "Children and Young readers": "children-young-readers",
+        "Highschool/general readers": "highschool-general-readers",
+        Academics: "academics",
+        "General Adult interest": "general-adult-interest",
+      };
+
+      const ALL_AGE_GROUPS = Object.keys(ageClasses);
+
+      const librarySection = document.getElementById("library");
+      const categoryNav = document.getElementById("categoryNav");
+      const ageFilterNav = document.getElementById("ageFilterNav");
+      const searchInput = document.getElementById("search");
+      const noResults = document.getElementById("noResults");
+
+      let currentAgeFilter = "";
+      let currentTextFilter = "";
+
+      function highlightText(text, filter) {
+        if (!filter) return text;
+        const regex = new RegExp(`(${filter})`, "gi");
+        return text.replace(regex, "<mark>$1</mark>");
+      }
+
+      function createAgeFilterButtons() {
+        ageFilterNav.innerHTML = "";
+
+        const allButton = document.createElement("button");
+        allButton.textContent = "All Age Groups";
+        allButton.addEventListener("click", () => {
+          currentAgeFilter = "";
+          displayLibrary(currentTextFilter, currentAgeFilter);
+        });
+        ageFilterNav.appendChild(allButton);
+
+        ALL_AGE_GROUPS.forEach((age) => {
+          const button = document.createElement("button");
+          button.textContent = age;
+          button.addEventListener("click", () => {
+            currentAgeFilter = age;
+            displayLibrary(currentTextFilter, currentAgeFilter);
+          });
+          ageFilterNav.appendChild(button);
+        });
+      }
+
+      function displayLibrary(textFilter = "", ageFilter = "") {
+        currentTextFilter = textFilter;
+        currentAgeFilter = ageFilter;
+
+        librarySection.innerHTML = "";
+        categoryNav.innerHTML = "";
+        let hasResults = false;
+
+        document.querySelectorAll("#ageFilterNav button").forEach((button) => {
+          button.classList.remove("active");
+          if (ageFilter === "" && button.textContent === "All Age Groups") {
+            button.classList.add("active");
+          } else if (ageFilter === button.textContent) {
+            button.classList.add("active");
+          }
+        });
+
+        for (const category in library) {
+          const catDiv = document.createElement("div");
+          catDiv.id = category;
+          catDiv.innerHTML = `<h2>${highlightText(category, textFilter)}</h2>`;
+
+          let categoryHasContent = false;
+
+          for (const type in library[category]) {
+            const icon = typeIcons[type] || "";
+            const typeDetails = document.createElement("details");
+            typeDetails.open = false;
+            typeDetails.innerHTML = `<summary>${icon} ${highlightText(
+              type,
+              textFilter
+            )}</summary>`;
+
+            const ageGroups = {};
+            library[category][type].forEach((book) => {
+              const ageKey = book.age;
+
+              // Filter by age first
+              if (ageFilter && ageKey !== ageFilter) return;
+
+              if (!ageGroups[ageKey]) ageGroups[ageKey] = [];
+              ageGroups[ageKey].push(book);
+            });
+
+            for (const age in ageGroups) {
+              const ageDetails = document.createElement("details");
+              ageDetails.open = false;
+              ageDetails.innerHTML = `<summary>${highlightText(
+                age,
+                textFilter
+              )}</summary>`;
+
+              ageGroups[age].forEach((book) => {
+                const searchText =
+                  `${book.title} ${book.author} ${category} ${type} ${age} ${book.summary}`.toLowerCase();
+
+                if (
+                  textFilter &&
+                  !searchText.includes(textFilter.toLowerCase())
+                )
+                  return;
+
+                hasResults = true;
+                categoryHasContent = true;
+
+                const bookDetails = document.createElement("details");
+                bookDetails.className = ageClasses[age] || "";
+                bookDetails.open = false;
+                bookDetails.innerHTML = `<summary>${highlightText(
+                  book.title,
+                  textFilter
+                )} — ${highlightText(book.author, textFilter)}</summary>
+                                           <p>${highlightText(
+                                             book.summary,
+                                             textFilter
+                                           )}</p>`;
+                ageDetails.appendChild(bookDetails);
+
+                if (
+                  textFilter &&
+                  searchText.includes(textFilter.toLowerCase())
+                ) {
+                  ageDetails.open = true;
+                  typeDetails.open = true;
+                } else {
+                  ageDetails.open = false;
+                  typeDetails.open = false;
+                }
+              });
+
+              if (ageDetails.querySelector("details"))
+                typeDetails.appendChild(ageDetails);
+            }
+
+            if (typeDetails.querySelector("details"))
+              catDiv.appendChild(typeDetails);
+          }
+
+          if (categoryHasContent || !textFilter) {
+            librarySection.appendChild(catDiv);
+
+            const catLink = document.createElement("a");
+            catLink.href = `#${category}`;
+            catLink.innerHTML = highlightText(category, textFilter);
+            categoryNav.appendChild(catLink);
+
+            if (!textFilter) hasResults = true;
+          }
+        }
+
+        noResults.style.display = hasResults ? "none" : "block";
+      }
+
+      createAgeFilterButtons();
+
+      displayLibrary();
+
+      searchInput.addEventListener("input", (e) => {
+        displayLibrary(e.target.value, currentAgeFilter);
+      });
+
+      const backToTop = document.getElementById("backToTop");
+      window.addEventListener("scroll", () => {
+        backToTop.style.display = window.scrollY > 200 ? "block" : "none";
+      });
+      backToTop.addEventListener("click", () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+
+      categoryNav.addEventListener("click", function (e) {
+        if (e.target.tagName === "A") {
+          e.preventDefault();
+          const targetId = e.target.getAttribute("href").substring(1);
+          const targetElem = document.getElementById(targetId);
+
+          const headerHeight = document.querySelector("header").offsetHeight;
+          const topBarHeight = document.querySelector(".top-bar").offsetHeight;
+
+          const headerOffset = headerHeight + topBarHeight + 5;
+
+          if (targetElem) {
+            const elementPosition =
+              targetElem.getBoundingClientRect().top + window.pageYOffset;
+            const offsetPosition = elementPosition - headerOffset;
+
+            window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
